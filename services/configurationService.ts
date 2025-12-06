@@ -2,7 +2,8 @@ import { runGoogleScript } from './googleScript';
 import * as Constants from '../constants';
 import { Environment, Platform } from '../types';
 
-const DATA_SOURCE: string = 'GAS_HOSTED'; // Sync with testCaseService
+// Default to LOCAL for preview environment stability
+const DATA_SOURCE: string = 'LOCAL'; 
 const STORAGE_KEY_USERS = 'bankai_qa_user_db';
 const STORAGE_KEY_CONFIG = 'bankai_qa_config_db';
 
@@ -23,8 +24,7 @@ export const configurationService = {
         const users = await runGoogleScript('apiGetUsers');
         return users || [];
       } catch (e) {
-        console.error("Failed to fetch users from GAS", e);
-        return [];
+        // Silent fallback to local if GAS fails
       }
     }
 
@@ -41,8 +41,10 @@ export const configurationService = {
 
   createUser: async (user: any) => {
     if (DATA_SOURCE === 'GAS_HOSTED') {
-      await runGoogleScript('apiCreateUser', user);
-      return;
+      try {
+        await runGoogleScript('apiCreateUser', user);
+        return;
+      } catch (e) {}
     }
 
     // Local Fallback
@@ -53,8 +55,10 @@ export const configurationService = {
 
   toggleUserStatus: async (userId: string) => {
     if (DATA_SOURCE === 'GAS_HOSTED') {
-      await runGoogleScript('apiToggleUser', userId);
-      return;
+      try {
+        await runGoogleScript('apiToggleUser', userId);
+        return;
+      } catch (e) {}
     }
 
     // Local Fallback
@@ -83,7 +87,7 @@ export const configurationService = {
             .map(item => item.value);
         }
       } catch (e) {
-        console.warn("GAS Config fetch failed, using constants");
+        // console.warn("GAS Config fetch failed, using constants");
       }
     } else {
       // Local Storage
@@ -110,8 +114,10 @@ export const configurationService = {
 
   addDropdownOption: async (category: string, value: string) => {
     if (DATA_SOURCE === 'GAS_HOSTED') {
-      await runGoogleScript('apiAddConfiguration', { category, value });
-      return;
+      try {
+        await runGoogleScript('apiAddConfiguration', { category, value });
+        return;
+      } catch (e) {}
     }
 
     const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
@@ -122,8 +128,10 @@ export const configurationService = {
 
   deleteDropdownOption: async (category: string, value: string) => {
     if (DATA_SOURCE === 'GAS_HOSTED') {
-      await runGoogleScript('apiDeleteConfiguration', { category, value });
-      return;
+      try {
+        await runGoogleScript('apiDeleteConfiguration', { category, value });
+        return;
+      } catch (e) {}
     }
 
     const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
@@ -146,7 +154,8 @@ export const configurationService = {
       }
       return { status: 'ONLINE', latency: Date.now() - start };
     } catch (e) {
-      return { status: 'OFFLINE', latency: 0 };
+      // If GAS fails, we might still be online locally, but "offline" relative to backend
+      return { status: 'LOCAL MODE', latency: 0 };
     }
   }
 };

@@ -1,27 +1,26 @@
-
 export enum Status {
-  Draft = 'Draft',
-  InReview = 'In Review',
-  Approved = 'Approved',
+  Passed = 'Passed',
+  Failed = 'Failed',
   Blocked = 'Blocked',
-  Retest = 'Retest',
-  Pass = 'Pass',
-  Fail = 'Fail',
-  Deprecated = 'Deprecated'
+  InProgress = 'In Progress',
+  NotExecuted = 'Not Executed',
+  Rejected = 'Rejected'
 }
 
 export enum Priority {
-  Critical = 'Critical',
+  Immediate = 'Immediate',
   High = 'High',
   Medium = 'Medium',
-  Low = 'Low'
+  Low = 'Low',
+  VeryLow = 'Very Low'
 }
 
 export enum Severity {
   Critical = 'Critical',
-  Major = 'Major',
-  Minor = 'Minor',
-  Cosmetic = 'Cosmetic'
+  Major = 'Major', 
+  High = 'High',
+  Medium = 'Medium',
+  Low = 'Low'
 }
 
 export enum Environment {
@@ -29,32 +28,80 @@ export enum Environment {
   QA = 'QA',
   UAT = 'UAT',
   PROD = 'PROD',
-  STAGING = 'STAGING'
+  SIT = 'SIT'
 }
 
 export enum Platform {
   Web = 'Web',
-  MobileAndroid = 'Mobile (Android)',
-  MobileiOS = 'Mobile (iOS)',
-  Desktop = 'Desktop',
-  API = 'API'
+  Mobile = 'Mobile',
+  API = 'API',
+  Desktop = 'Desktop'
 }
 
 export enum TestType {
-  Functional = 'Functional',
-  Regression = 'Regression',
-  Smoke = 'Smoke',
-  Sanity = 'Sanity',
-  Integration = 'Integration',
-  Security = 'Security',
-  Performance = 'Performance'
+  Unit = 'Unit Testing',
+  Integration = 'Integration Testing',
+  System = 'System Testing',
+  E2E = 'End-to-End Testing (E2E)',
+  Functional = 'Functional Testing',
+  UI = 'UI Testing',
+  Regression = 'Regression Testing',
+  Retesting = 'Retesting',
+  Smoke = 'Smoke Testing',
+  Sanity = 'Sanity Testing',
+  UAT = 'User Acceptance Testing (UAT)',
+  Alpha = 'Alpha Testing',
+  Beta = 'Beta Testing',
+  Exploratory = 'Exploratory Testing',
+  Adhoc = 'Adhoc Testing',
+  Usability = 'Usability Testing',
+  Accessibility = 'Accessibility Testing',
+  Compatibility = 'Compatibility Testing',
+  CrossBrowser = 'Cross-Browser Testing',
+  CrossPlatform = 'Cross-Platform Testing',
+  Localization = 'Localization Testing',
+  Internationalization = 'Internationalization Testing',
+  Installation = 'Installation Testing',
+  Configuration = 'Configuration Testing',
+  Database = 'Database Testing',
+  API = 'API Testing',
+  Security = 'Security Testing',
+  Penetration = 'Penetration Testing',
+  Vulnerability = 'Vulnerability Assessment',
+  Performance = 'Performance Testing',
+  Load = 'Load Testing',
+  Stress = 'Stress Testing',
+  Spike = 'Spike Testing',
+  Soak = 'Soak Testing',
+  Scalability = 'Scalability Testing',
+  Volume = 'Volume Testing',
+  Reliability = 'Reliability Testing',
+  Recovery = 'Recovery Testing',
+  Failover = 'Failover Testing',
+  Compliance = 'Compliance Testing',
+  Conformance = 'Conformance Testing',
+  Portability = 'Portability Testing',
+  RiskBased = 'Risk-Based Testing',
+  Monkey = 'Monkey Testing',
+  Gorilla = 'Gorilla Testing',
+  Boundary = 'Boundary Value Testing',
+  Equivalence = 'Equivalence Partitioning',
+  Pairwise = 'Pairwise Testing',
+  AB = 'A/B Testing',
+  Chaos = 'Chaos Testing',
+  Mutation = 'Mutation Testing',
+  WhiteBox = 'White Box Testing',
+  BlackBox = 'Black Box Testing',
+  GreyBox = 'Grey Box Testing',
+  Static = 'Static Testing',
+  Dynamic = 'Dynamic Testing'
 }
 
 export interface TestCase {
   id: string; // Test Case ID
   subject: string;
-  status: Status;
-  priority: Priority;
+  status: string; // Using string to allow flexible imports, but usually Enum
+  priority: string;
   qaName: string;
   product: string;
   crNumber: string;
@@ -62,14 +109,14 @@ export interface TestCase {
   screenCode: string;
   fieldName: string;
   executionDate: string;
-  platform: Platform;
-  environment: Environment;
-  testType: TestType;
+  platform: string;
+  environment: string;
+  testType: string;
   defectLink?: string;
   reviewer: string;
   qaReviewRemarks?: string;
   justificationRemarks?: string;
-  proofOfTestcase?: string; // URL or text reference
+  proofOfTestcase?: string;
   expectedOutput: string;
   actualOutput?: string;
   testSteps: string;
@@ -78,9 +125,9 @@ export interface TestCase {
   lastModified: string;
   lastModifiedBy: string;
   
-  // Additional dropdown fields requested
+  // Additional dropdown fields
   defectType?: string;
-  severity?: Severity;
+  severity?: string;
   testCategory?: string;
   browser?: string;
   deviceType?: string;
@@ -91,15 +138,6 @@ export interface TestCase {
 }
 
 export type TestCaseFormData = Omit<TestCase, 'id' | 'lastModified' | 'lastModifiedBy'>;
-
-// Filter State Interface
-export interface FilterState {
-  status: string[];
-  priority: string[];
-  product: string[];
-  qaName: string[];
-  executionDateRange: { start: string; end: string };
-}
 
 // Auth Types
 export interface User {
@@ -112,3 +150,46 @@ export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
 }
+
+// Gamification Types
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string; // lucide icon name
+  category: 'Execution' | 'Quality' | 'Collaboration' | 'Efficiency';
+  earnedDate?: string;
+  progress: number;
+  maxProgress: number;
+  unlocked: boolean;
+}
+
+export interface UserStats {
+  rank: number;
+  score: number;
+  level: number;
+  badges: Badge[];
+  streak: number;
+}
+
+// Activity Feed Type
+export interface ActivityLog {
+  id: string;
+  user: string;
+  action: 'created' | 'updated' | 'executed' | 'deleted' | 'commented';
+  entityName: string;
+  timestamp: string; // ISO or relative
+  link?: string;
+  status?: string;
+}
+
+// Filter State Type
+export interface FilterState {
+  status: string[];
+  priority: string[];
+  qaName: string[];
+  search: string;
+}
+
+// View Types
+export type ViewMode = 'list' | 'board' | 'timeline';

@@ -28,9 +28,13 @@ export const authService = {
         return user;
       }
     } catch (error: any) {
-      // console.log("GAS Login failed (or running locally):", error);
-      // If error is strictly "Invalid Credentials", throw it.
-      if (error.message === 'Invalid Credentials') {
+      // If the error is simply that we are running locally, suppress it and use fallback
+      if (error.message !== 'Running locally (Outside GAS). Fallback needed.') {
+        // console.warn("GAS Login failed:", error);
+      }
+      
+      // If error is strictly "Invalid Credentials" from the backend, throw it.
+      if (error.message === 'Invalid Credentials' || error.message === 'User is inactive') {
         throw error;
       }
     }

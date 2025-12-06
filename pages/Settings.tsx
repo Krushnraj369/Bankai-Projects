@@ -1,33 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Database, Activity, Plus, Trash2, Save, RefreshCw, Power, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Database, Activity, Plus, Trash2, Save, RefreshCw, Power, CheckCircle, XCircle, User, Sliders, Volume2, Monitor } from 'lucide-react';
 import { configurationService } from '../services/configurationService';
+import { AnimatedPage, AnimatedCard } from '../components/Animations';
 
 export const Settings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'users' | 'masterData' | 'health'>('users');
+  const [activeTab, setActiveTab] = useState<'preferences' | 'users' | 'masterData' | 'health'>('preferences');
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      
-      {/* Page Title */}
-      <div>
-        <h2 className="text-2xl font-bold text-heading">System Configuration</h2>
-        <p className="text-muted">Manage users, dropdown options, and system health.</p>
-      </div>
+    <AnimatedPage>
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* Page Title */}
+        <div>
+          <h2 className="text-2xl font-bold text-heading">Settings & Configuration</h2>
+          <p className="text-muted">Manage your personal preferences and system-wide configurations.</p>
+        </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-border space-x-6">
-        <TabButton id="users" label="User Management" icon={Users} active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
-        <TabButton id="masterData" label="Master Data" icon={Database} active={activeTab === 'masterData'} onClick={() => setActiveTab('masterData')} />
-        <TabButton id="health" label="System Health" icon={Activity} active={activeTab === 'health'} onClick={() => setActiveTab('health')} />
-      </div>
+        {/* Tabs */}
+        <div className="flex border-b border-border space-x-6 overflow-x-auto custom-scrollbar">
+          <TabButton id="preferences" label="Personal Preferences" icon={Sliders} active={activeTab === 'preferences'} onClick={() => setActiveTab('preferences')} />
+          <div className="w-px bg-border my-2 mx-2"></div>
+          <TabButton id="users" label="User Management" icon={Users} active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
+          <TabButton id="masterData" label="Master Data" icon={Database} active={activeTab === 'masterData'} onClick={() => setActiveTab('masterData')} />
+          <TabButton id="health" label="System Health" icon={Activity} active={activeTab === 'health'} onClick={() => setActiveTab('health')} />
+        </div>
 
-      {/* Tab Content */}
-      <div className="min-h-[400px]">
-        {activeTab === 'users' && <UserManagementTab />}
-        {activeTab === 'masterData' && <MasterDataTab />}
-        {activeTab === 'health' && <SystemHealthTab />}
+        {/* Tab Content */}
+        <div className="min-h-[400px]">
+          {activeTab === 'preferences' && <PreferencesTab />}
+          {activeTab === 'users' && <UserManagementTab />}
+          {activeTab === 'masterData' && <MasterDataTab />}
+          {activeTab === 'health' && <SystemHealthTab />}
+        </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 };
 
@@ -38,7 +44,7 @@ export const Settings: React.FC = () => {
 const TabButton = ({ id, label, icon: Icon, active, onClick }: any) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors ${
+    className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
       active ? 'border-primary-500 text-primary-600' : 'border-transparent text-muted hover:text-heading'
     }`}
   >
@@ -46,6 +52,81 @@ const TabButton = ({ id, label, icon: Icon, active, onClick }: any) => (
     {label}
   </button>
 );
+
+// --- PREFERENCES TAB ---
+const PreferencesTab = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      {/* Visual Settings */}
+      <AnimatedCard className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+        <h3 className="font-bold text-heading mb-4 flex items-center gap-2"><Monitor size={18}/> Visual Interface</h3>
+        <div className="space-y-4">
+           <div className="flex items-center justify-between">
+              <div>
+                 <div className="text-sm font-medium text-heading">Reduced Motion</div>
+                 <div className="text-xs text-muted">Minimize animations for better accessibility</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+           </div>
+           <div className="flex items-center justify-between">
+              <div>
+                 <div className="text-sm font-medium text-heading">Compact Mode</div>
+                 <div className="text-xs text-muted">Increase data density in tables</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+           </div>
+        </div>
+      </AnimatedCard>
+
+      {/* Notification & Sound */}
+      <AnimatedCard delay={0.1} className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+        <h3 className="font-bold text-heading mb-4 flex items-center gap-2"><Volume2 size={18}/> Sound & Notifications</h3>
+        <div className="space-y-4">
+           <div className="flex items-center justify-between">
+              <div>
+                 <div className="text-sm font-medium text-heading">System Sounds</div>
+                 <div className="text-xs text-muted">Play sounds for success/error events</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" defaultChecked className="sr-only peer" />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+           </div>
+           <div className="flex items-center justify-between">
+              <div>
+                 <div className="text-sm font-medium text-heading">Email Digests</div>
+                 <div className="text-xs text-muted">Receive daily summary emails</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" defaultChecked className="sr-only peer" />
+                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+           </div>
+        </div>
+      </AnimatedCard>
+
+      {/* Account Info */}
+      <AnimatedCard delay={0.2} className="md:col-span-2 bg-surface border border-border rounded-xl p-6 shadow-sm flex items-center gap-6">
+         <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-2xl font-bold">
+            <User size={32} />
+         </div>
+         <div>
+            <h3 className="font-bold text-heading">Admin User</h3>
+            <p className="text-sm text-muted">admin@bankai.qa • System Administrator</p>
+            <button className="mt-2 text-xs font-bold text-primary-600 hover:underline">Edit Profile</button>
+         </div>
+      </AnimatedCard>
+
+    </div>
+  );
+};
 
 // --- USER MANAGEMENT TAB ---
 const UserManagementTab = () => {

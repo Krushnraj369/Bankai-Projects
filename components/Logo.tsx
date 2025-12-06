@@ -45,7 +45,7 @@ export const Logo: React.FC<LogoProps> = ({ theme, className = "", showText = tr
         
         {/* Outer Ring Segments */}
         <path 
-          d="M20 4C11.1634 4 4 11.1634 4 20C4 28.8366 11.1634 36 20 36C28.8366 36 36 28.8366 36 20" 
+          d="M20 4C11.1634 4 4 11.1634 4 20C4 28.8366 11.1634 36 20 36C28.8366 36 28.8366 36 20" 
           stroke={`url(#grad-${theme})`} 
           strokeWidth="3" 
           strokeLinecap="round"

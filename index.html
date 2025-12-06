@@ -16,26 +16,39 @@
               mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
-              // Semantic Colors Mapped to CSS Variables
               background: 'var(--bg-main)',
               surface: 'var(--bg-card)',
               'surface-hover': 'var(--bg-card-hover)',
               heading: 'var(--text-main)',
               muted: 'var(--text-secondary)',
               border: 'var(--border-main)',
-              
               primary: {
                 50: 'var(--primary-50)',
                 500: 'var(--primary-500)',
                 600: 'var(--primary-600)',
                 700: 'var(--primary-700)',
               },
-              // Keep some specific colors for alerts/badges
               slate: {
                 850: '#1e293b',
                 900: '#0f172a',
                 950: '#020617',
               }
+            },
+            keyframes: {
+              'slide-in': {
+                '0%': { transform: 'translateX(100%)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
+              'blob': {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              }
+            },
+            animation: {
+              'slide-in': 'slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              'blob': 'blob 7s infinite',
             }
           }
         }
@@ -43,7 +56,6 @@
     </script>
     <style>
       :root {
-        /* Default Light Theme */
         --bg-main: #f8fafc;        /* slate-50 */
         --bg-card: #ffffff;        /* white */
         --bg-card-hover: #f1f5f9;  /* slate-100 */
@@ -57,7 +69,6 @@
         --primary-700: #0369a1;
       }
 
-      /* Dark Theme */
       .dark {
         --bg-main: #0f172a;        /* slate-900 */
         --bg-card: #1e293b;        /* slate-800 */
@@ -72,19 +83,118 @@
         --primary-700: #0284c7;
       }
 
-      /* Cosmic Theme (Deep Purple/Blue) */
       .cosmic {
-        --bg-main: #0b0f19;        /* Very dark blue */
-        --bg-card: #111827;        /* gray-900 */
-        --bg-card-hover: #1f2937;  /* gray-800 */
+        --bg-main: #050508;        /* Almost black */
+        --bg-card: #0f1016;        /* Deep space */
+        --bg-card-hover: #1a1b26;  /* Lighter space */
         --text-main: #e2e8f0;      /* slate-200 */
-        --text-secondary: #9ca3af; /* gray-400 */
-        --border-main: #374151;    /* gray-700 */
+        --text-secondary: #94a3b8; /* slate-400 */
+        --border-main: #2d2f3f;    /* Space border */
         
         --primary-50: #2e1065;
-        --primary-500: #a78bfa;    /* violet-400 */
-        --primary-600: #8b5cf6;    /* violet-500 */
-        --primary-700: #7c3aed;
+        --primary-500: #8b5cf6;    /* violet-500 */
+        --primary-600: #7c3aed;    /* violet-600 */
+        --primary-700: #6d28d9;
+      }
+
+      .cyberpunk {
+        --bg-main: #050505;        
+        --bg-card: #0d0d12;        
+        --bg-card-hover: #1a1a24;  
+        --text-main: #00f0ff;      /* Cyan */
+        --text-secondary: #ff003c; /* Neon Red */
+        --border-main: #2b2b3b;    
+        
+        --primary-50: #2a0a1a;
+        --primary-500: #ff003c;    
+        --primary-600: #d90032;    
+        --primary-700: #b00028;
+      }
+
+      .nature {
+        --bg-main: #f0fdf4;        /* green-50 */
+        --bg-card: #ffffff;        
+        --bg-card-hover: #dcfce7;  /* green-100 */
+        --text-main: #14532d;      /* green-900 */
+        --text-secondary: #15803d; /* green-700 */
+        --border-main: #bbf7d0;    /* green-200 */
+        
+        --primary-50: #f0fdf4;
+        --primary-500: #16a34a;    /* green-600 */
+        --primary-600: #15803d;    /* green-700 */
+        --primary-700: #14532d;
+      }
+
+      /* --- NEW THEMES --- */
+
+      .executive {
+        --bg-main: #0B1120;        /* Deep Navy */
+        --bg-card: #1E293B;        /* Slate 800 */
+        --bg-card-hover: #334155;
+        --text-main: #ffffff;
+        --text-secondary: #94a3b8;
+        --border-main: #334155;
+        
+        --primary-50: #1e1b4b;
+        --primary-500: #f59e0b;    /* Amber/Gold */
+        --primary-600: #d97706;
+        --primary-700: #b45309;
+      }
+
+      .terminal {
+        --bg-main: #000000;
+        --bg-card: #0a0a0a;
+        --bg-card-hover: #111111;
+        --text-main: #4ade80;      /* Green 400 */
+        --text-secondary: #22c55e; /* Green 500 */
+        --border-main: #14532d;    /* Green 900 */
+        
+        --primary-50: #052e16;
+        --primary-500: #4ade80;
+        --primary-600: #22c55e;
+        --primary-700: #15803d;
+      }
+
+      .sakura {
+        --bg-main: #fff1f2;        /* Rose 50 */
+        --bg-card: #ffffff;
+        --bg-card-hover: #ffe4e6;
+        --text-main: #881337;      /* Rose 900 */
+        --text-secondary: #be123c; /* Rose 700 */
+        --border-main: #fecdd3;
+        
+        --primary-50: #fff1f2;
+        --primary-500: #fb7185;    /* Rose 400 */
+        --primary-600: #f43f5e;
+        --primary-700: #e11d48;
+      }
+
+      .sunset {
+        --bg-main: #2e1065;        /* Violet 950 */
+        --bg-card: #4c1d95;        /* Violet 900 */
+        --bg-card-hover: #5b21b6;
+        --text-main: #fdf4ff;
+        --text-secondary: #e9d5ff;
+        --border-main: #6d28d9;
+        
+        --primary-50: #4a044e;
+        --primary-500: #f97316;    /* Orange 500 */
+        --primary-600: #ea580c;
+        --primary-700: #c2410c;
+      }
+
+      .abyss {
+        --bg-main: #083344;        /* Cyan 950 */
+        --bg-card: #164e63;        /* Cyan 900 */
+        --bg-card-hover: #155e75;
+        --text-main: #ecfeff;
+        --text-secondary: #a5f3fc;
+        --border-main: #0e7490;
+        
+        --primary-50: #083344;
+        --primary-500: #06b6d4;    /* Cyan 500 */
+        --primary-600: #0891b2;
+        --primary-700: #0e7490;
       }
 
       body {
@@ -93,7 +203,6 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
       
-      /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -108,6 +217,23 @@
       ::-webkit-scrollbar-thumb:hover {
         background: var(--text-secondary); 
       }
+      
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      /* Glassmorphism Utilities */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      .glass-panel-hover:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
     </style>
   <script type="importmap">
 {
@@ -116,7 +242,9 @@
     "react": "https://aistudiocdn.com/react@^19.2.1",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
-    "recharts": "https://aistudiocdn.com/recharts@^3.5.1"
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@6.22.3",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.0.8"
   }
 }
 </script>

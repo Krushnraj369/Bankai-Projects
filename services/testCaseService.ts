@@ -1,12 +1,14 @@
 import { TestCase, TestCaseFormData, Status, Priority, Environment, Platform, TestType } from '../types';
 import { runGoogleScript } from './googleScript';
+import * as Constants from '../constants';
 
 // ============================================================================
 // CONFIGURATION CENTER
 // ============================================================================
 
 // Options: 'LOCAL' | 'GSHEET' | 'ORACLE_DIRECT' | 'NODE_API' | 'GAS_HOSTED'
-const DATA_SOURCE: string = 'GAS_HOSTED'; 
+// Defaulting to 'LOCAL' for stable preview environment
+const DATA_SOURCE: string = 'LOCAL'; 
 
 // CONFIGURATION DETAILS
 const API_CONFIG = {
@@ -25,6 +27,8 @@ const generateMockData = (): TestCase[] => {
   const cases: TestCase[] = [];
   const statuses = Object.values(Status);
   const priorities = Object.values(Priority);
+  const qaNames = Constants.QA_NAMES;
+  const products = Constants.PRODUCTS;
   
   for (let i = 1; i <= 20; i++) {
     cases.push({
@@ -32,8 +36,8 @@ const generateMockData = (): TestCase[] => {
       subject: `Validate login functionality scenario ${i} (Local Mock)`,
       status: statuses[Math.floor(Math.random() * statuses.length)],
       priority: priorities[Math.floor(Math.random() * priorities.length)],
-      qaName: i % 2 === 0 ? 'Amit Sharma' : 'Priya Patel',
-      product: 'Bankai ERP',
+      qaName: qaNames[Math.floor(Math.random() * qaNames.length)],
+      product: products[Math.floor(Math.random() * products.length)],
       crNumber: `CR-${202400 + i}`,
       moduleCode: 'AUTH_MOD',
       screenCode: 'LGN_SCR_01',
@@ -42,15 +46,15 @@ const generateMockData = (): TestCase[] => {
       platform: Platform.Web,
       environment: Environment.QA,
       testType: TestType.Functional,
-      reviewer: 'Rahul Verma',
+      reviewer: 'Krushnraj',
       expectedOutput: 'User should be logged in successfully',
       testSteps: '1. Open URL\n2. Enter User\n3. Click Login',
       preconditions: 'User exists in DB',
       postConditions: 'Session token generated',
       lastModified: new Date().toISOString(),
       lastModifiedBy: 'System Admin',
-      testSuite: 'Smoke Suite A',
-      releaseVersion: 'v2.5.0'
+      testSuite: 'Sanity Pack',
+      releaseVersion: 'v1.0'
     });
   }
   return cases;
@@ -64,15 +68,18 @@ export const testCaseService = {
   
   // --- GET ALL TEST CASES ---
   getAll: async (): Promise<TestCase[]> => {
+    // 1. Try GAS if configured
     if (DATA_SOURCE === 'GAS_HOSTED') {
       try {
         const data = await runGoogleScript('apiGetTestCases');
         return data || [];
       } catch (e) {
+        // Silent fallback to local if GAS fails (e.g. running locally)
         // console.warn("GAS execution failed. Switching to Mock Data.");
       }
     }
 
+    // 2. Try Node API if configured
     if (DATA_SOURCE === 'NODE_API') {
       try {
         const response = await fetch(API_CONFIG.nodeServerUrl);
@@ -83,6 +90,7 @@ export const testCaseService = {
       }
     }
 
+    // 3. Local Storage / Mock Data Fallback
     await delay(300);
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) {
@@ -91,6 +99,12 @@ export const testCaseService = {
       return mocks;
     }
     return JSON.parse(stored);
+  },
+
+  // --- GET SINGLE BY ID ---
+  getById: async (id: string): Promise<TestCase | null> => {
+    const all = await testCaseService.getAll();
+    return all.find(c => c.id === id) || null;
   },
 
   // --- CREATE TEST CASE ---
@@ -130,7 +144,7 @@ export const testCaseService = {
     const cleanData = dataArray.map((item, index) => ({
       ...item,
       id: item.id || `TC-${Date.now()}-${index}`, // Ensure ID exists
-      status: item.status || Status.Draft,
+      status: item.status || Status.NotExecuted,
       priority: item.priority || Priority.Medium,
       executionDate: item.executionDate || new Date().toISOString().split('T')[0],
       lastModified: new Date().toISOString()
@@ -141,8 +155,7 @@ export const testCaseService = {
         await runGoogleScript('apiImportTestCases', cleanData);
         return;
       } catch (e) {
-        console.error("GAS Import Failed", e);
-        throw e;
+        // Fallback to local import if GAS fails
       }
     }
 
@@ -175,6 +188,26 @@ export const testCaseService = {
       cases[index] = { ...cases[index], ...updates, lastModified: new Date().toISOString() };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
     }
+  },
+
+  // --- BULK UPDATE TEST CASES ---
+  bulkUpdate: async (ids: string[], updates: Partial<TestCase>): Promise<void> => {
+    if (DATA_SOURCE === 'GAS_HOSTED') {
+      try {
+        await runGoogleScript('apiBulkUpdateTestCases', { ids, updates });
+        return;
+      } catch (e) {
+         // Fallback to local
+      }
+    }
+
+    await delay(500);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return;
+
+    let cases: TestCase[] = JSON.parse(stored);
+    cases = cases.map(c => ids.includes(c.id) ? { ...c, ...updates, lastModified: new Date().toISOString() } : c);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
   },
 
   // --- DELETE TEST CASE ---

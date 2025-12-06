@@ -117,6 +117,33 @@ function apiUpdateTestCase(payload) {
   return JSON.stringify({ status: 'error', message: 'ID not found' });
 }
 
+function apiBulkUpdateTestCases(payload) {
+  var ids = payload.ids;
+  var updates = payload.updates;
+  var sheet = getSheet('TestCases');
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var idIdx = headers.indexOf('id');
+
+  if (idIdx === -1) return JSON.stringify({ status: 'error', message: 'ID column not found' });
+
+  // Map header name to column index (1-based)
+  var colMap = {};
+  headers.forEach(function(h, i) { colMap[h] = i + 1; });
+
+  for (var i = 1; i < data.length; i++) {
+    // Check if current row ID is in the list of IDs to update
+    if (ids.indexOf(data[i][idIdx]) > -1) {
+      Object.keys(updates).forEach(function(key) {
+        if (colMap[key]) {
+           sheet.getRange(i + 1, colMap[key]).setValue(updates[key]);
+        }
+      });
+    }
+  }
+  return JSON.stringify({ status: 'success' });
+}
+
 function apiDeleteTestCases(ids) {
   var sheet = getSheet('TestCases');
   var data = sheet.getDataRange().getValues();
